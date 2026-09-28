@@ -42,4 +42,5 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/smartbooking_db
           SPRING_DATASOURCE_USERNAME: smartbooking
           SPRING_DATASOURCE_PASSWORD: smartbooking_pass
+          JWT_SECRET: ci_test_secret_at_least_32_characters_long
         run: ./mvnw -B clean test
