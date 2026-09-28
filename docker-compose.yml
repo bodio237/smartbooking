@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16
+    container_name: smartbooking_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-smartbooking}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-smartbooking_pass}
+      POSTGRES_DB: ${DB_NAME:-smartbooking_db}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-smartbooking}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartbooking_network
+
+volumes:
+  postgres_data:
+
+networks:
+  smartbooking_network:
+    driver: bridge

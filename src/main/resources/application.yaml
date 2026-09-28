@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: smartbooking
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/${DB_NAME:smartbooking_db}
+    username: ${DB_USER:smartbooking}
+    password: ${DB_PASSWORD:smartbooking_pass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+    show-sql: true
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change_this_secret_in_production_at_least_32_chars}
+    expiration-ms: 604800000
+
+logging:
+  level:
+    org.springframework.security: DEBUG
