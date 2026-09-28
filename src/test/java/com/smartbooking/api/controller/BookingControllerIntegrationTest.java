@@ -3,6 +3,7 @@ package com.smartbooking.api.controller;
 import com.smartbooking.config.security.UserPrincipal;
 import com.smartbooking.domain.model.Resource;
 import com.smartbooking.domain.model.User;
+import com.smartbooking.domain.model.Role;
 import com.smartbooking.domain.repository.ResourceRepository;
 import com.smartbooking.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -33,10 +34,17 @@ class BookingControllerIntegrationTest {
     @Test
     void shouldCreateBookingThroughApi() throws Exception {
 
-        // Utilisateur de test existant
-        User user = userRepository.findByEmail("user@smartbooking.com")
-                .orElseThrow();
+        // Utilisateur créé uniquement pour ce test
+User user = User.builder()
+        .email("api-test-" + System.nanoTime() + "@smartbooking.com")
+        .password("TestPassword123!")
+        .name("API Test User")
+        .role(Role.USER)
+        .build();
 
+user = userRepository.save(user);
+
+User savedUser = userRepository.save(user);
         // Nouvelle ressource créée uniquement pour ce test
         Resource resource = Resource.builder()
                 .name("Salle test API " + System.nanoTime())
