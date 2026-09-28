@@ -28,7 +28,7 @@ server:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:change_this_secret_in_production_at_least_32_chars}
+    secret: ${JWT_SECRET}
     expiration-ms: 604800000
 
 logging:
