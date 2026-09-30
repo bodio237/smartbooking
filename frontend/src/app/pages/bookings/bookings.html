@@ -1,0 +1,378 @@
+<div class="bookings-page">
+
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <a routerLink="/home" class="logo">
+        <span class="logo-mark">S</span>
+        <span>SmartBooking</span>
+      </a>
+
+      <nav class="main-nav">
+        <a routerLink="/home">Accueil</a>
+        <a routerLink="/resources">Ressources</a>
+        <a routerLink="/bookings" class="active">
+          Mes réservations
+        </a>
+      </nav>
+
+      <div class="header-actions">
+
+        <a routerLink="/login" class="login-link">
+          Connexion
+        </a>
+
+        <a routerLink="/register" class="signup-button">
+          Créer un compte
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <main class="bookings-container">
+
+    <section class="page-heading">
+
+      <span class="section-label">
+        MON ESPACE
+      </span>
+
+      <h1>
+        Mes réservations
+      </h1>
+
+      <p>
+        Retrouvez ici toutes vos réservations et leur état.
+      </p>
+
+    </section>
+
+
+    @if (loading) {
+
+      <div class="state-message">
+
+        <div class="loader"></div>
+
+        <p>
+          Chargement de vos réservations...
+        </p>
+
+      </div>
+
+    }
+
+    @else if (error) {
+
+      <div class="state-message error-state">
+
+        <div class="state-icon">
+          !
+        </div>
+
+        <h2>
+          Impossible de charger vos réservations
+        </h2>
+
+        <p>
+          Une erreur est survenue. Veuillez réessayer.
+        </p>
+
+        <button
+          type="button"
+          class="retry-button"
+          (click)="ngOnInit()"
+        >
+          Réessayer
+        </button>
+
+      </div>
+
+    }
+
+    @else if (bookings.length === 0) {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          📅
+        </div>
+
+        <h2>
+          Aucune réservation
+        </h2>
+
+        <p>
+          Vous n'avez encore aucune réservation.
+        </p>
+
+        <a
+          routerLink="/resources"
+          class="primary-button"
+        >
+          Voir les ressources
+        </a>
+
+      </div>
+
+    }
+
+    @else {
+
+      @if (cancelError) {
+
+        <div class="global-error">
+          <strong>
+            {{ cancelError }}
+          </strong>
+        </div>
+
+      }
+
+
+      <section class="booking-list">
+
+        @for (
+          booking of bookings;
+          track booking.id
+        ) {
+
+          <article class="booking-card">
+
+            <div class="booking-main">
+
+              <div class="resource-icon">
+                S
+              </div>
+
+              <div class="booking-content">
+
+                <div class="booking-top">
+
+                  <div>
+
+                    <span class="booking-label">
+                      RÉSERVATION #{{ booking.id }}
+                    </span>
+
+                    <h2>
+                      {{ getResourceName(booking.resourceId) }}
+                    </h2>
+
+                    <span class="resource-type">
+                      {{ getResourceType(booking.resourceId) }}
+                    </span>
+
+                  </div>
+
+                  <span
+                    class="status-badge"
+                    [class]="getStatusClass(booking.status)"
+                  >
+                    {{ getStatusLabel(booking.status) }}
+                  </span>
+
+                </div>
+
+
+                <div class="booking-details">
+
+                  <div class="detail">
+
+                    <span class="detail-icon">
+                      📅
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        Date
+                      </strong>
+
+                      <span>
+                        {{ formatDate(booking.startTime) }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="detail">
+
+                    <span class="detail-icon">
+                      🕐
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        Horaire
+                      </strong>
+
+                      <span>
+                        {{ formatTime(booking.startTime) }}
+                        –
+                        {{ formatTime(booking.endTime) }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="detail">
+
+                    <span class="detail-icon">
+                      🏢
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        Ressource
+                      </strong>
+
+                      <span>
+                        {{ getResourceName(booking.resourceId) }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                @if (booking.notes) {
+
+                  <div class="booking-notes">
+
+                    <strong>
+                      Note
+                    </strong>
+
+                    <span>
+                      {{ booking.notes }}
+                    </span>
+
+                  </div>
+
+                }
+
+
+                @if (canCancel(booking)) {
+
+                  <div class="booking-actions">
+
+                    <button
+                      type="button"
+                      class="cancel-button"
+                      [disabled]="cancellingBookingId === booking.id"
+                      (click)="cancelBooking(booking)"
+                    >
+
+                      @if (
+                        cancellingBookingId === booking.id
+                      ) {
+                        Annulation...
+                      }
+
+                      @else {
+                        Annuler la réservation
+                      }
+
+                    </button>
+
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          </article>
+
+        }
+
+      </section>
+
+    }
+
+  </main>
+
+
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <a
+          routerLink="/home"
+          class="logo"
+        >
+          <span class="logo-mark">S</span>
+          <span>SmartBooking</span>
+        </a>
+
+        <p>
+          Une plateforme de réservation simple, fiable et sécurisée.
+        </p>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Navigation
+        </h4>
+
+        <a routerLink="/home">
+          Accueil
+        </a>
+
+        <a routerLink="/resources">
+          Ressources
+        </a>
+
+        <a routerLink="/bookings">
+          Mes réservations
+        </a>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Compte
+        </h4>
+
+        <a routerLink="/login">
+          Connexion
+        </a>
+
+        <a routerLink="/register">
+          Créer un compte
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+      © 2026 SmartBooking · Plateforme de réservation fiable
+    </div>
+
+  </footer>
+
+</div>

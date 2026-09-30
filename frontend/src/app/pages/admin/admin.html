@@ -1,0 +1,639 @@
+<div class="admin-page">
+
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <a
+        routerLink="/home"
+        class="logo"
+      >
+        <span class="logo-mark">S</span>
+        <span>SmartBooking</span>
+      </a>
+
+
+      <nav class="main-nav">
+
+        <a routerLink="/home">
+          Accueil
+        </a>
+
+        <a routerLink="/resources">
+          Ressources
+        </a>
+
+        <a routerLink="/bookings">
+          Mes réservations
+        </a>
+
+        <a
+          routerLink="/admin"
+          class="active"
+        >
+          Administration
+        </a>
+
+      </nav>
+
+
+      <div class="header-actions">
+
+        <span class="admin-label">
+          ADMIN
+        </span>
+
+        <button
+          type="button"
+          class="logout-button"
+          (click)="logout()"
+        >
+          Déconnexion
+        </button>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <main class="admin-container">
+
+    <section class="page-heading">
+
+      <div>
+
+        <span class="section-label">
+          ADMINISTRATION
+        </span>
+
+        <h1>
+          Tableau de bord
+        </h1>
+
+        <p>
+          Suivez l'activité de SmartBooking et gérez les réservations.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    @if (loading) {
+
+      <div class="state-message">
+
+        <div class="loader"></div>
+
+        <p>
+          Chargement du tableau de bord...
+        </p>
+
+      </div>
+
+    }
+
+    @else if (error) {
+
+      <div class="state-message error-state">
+
+        <div class="state-icon">
+          !
+        </div>
+
+        <h2>
+          Impossible de charger le tableau de bord
+        </h2>
+
+        <p>
+          {{ error }}
+        </p>
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="loadDashboard()"
+        >
+          Réessayer
+        </button>
+
+      </div>
+
+    }
+
+    @else {
+
+      @if (updateError) {
+
+        <div class="global-error">
+
+          <strong>
+            {{ updateError }}
+          </strong>
+
+        </div>
+
+      }
+
+
+      <section class="stats-grid">
+
+        <article class="stat-card">
+
+          <div class="stat-icon blue">
+            R
+          </div>
+
+          <div class="stat-content">
+
+            <span>
+              Ressources actives
+            </span>
+
+            <strong>
+              {{ activeResourcesCount }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon green">
+            B
+          </div>
+
+          <div class="stat-content">
+
+            <span>
+              Réservations
+            </span>
+
+            <strong>
+              {{ totalBookingsCount }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon purple">
+            %
+          </div>
+
+          <div class="stat-content">
+
+            <span>
+              Occupation
+            </span>
+
+            <strong>
+              {{ occupancyRate }}%
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <div class="stat-icon orange">
+            N
+          </div>
+
+          <div class="stat-content">
+
+            <span>
+              No-show
+            </span>
+
+            <strong>
+              {{ noShowRate }}%
+            </strong>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <section class="dashboard-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-label">
+              ACTIVITÉ
+            </span>
+
+            <h2>
+              Réservations récentes
+            </h2>
+
+          </div>
+
+          <span class="section-count">
+            {{ recentBookings.length }} réservation(s)
+          </span>
+
+        </div>
+
+
+        @if (recentBookings.length === 0) {
+
+          <div class="empty-state">
+
+            <div class="empty-icon">
+              📅
+            </div>
+
+            <h3>
+              Aucune réservation
+            </h3>
+
+            <p>
+              Les réservations apparaîtront ici.
+            </p>
+
+          </div>
+
+        }
+
+        @else {
+
+          <div class="booking-table-wrapper">
+
+            <table class="booking-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Réservation
+                  </th>
+
+                  <th>
+                    Ressource
+                  </th>
+
+                  <th>
+                    Date
+                  </th>
+
+                  <th>
+                    Horaire
+                  </th>
+
+                  <th>
+                    Statut
+                  </th>
+
+                  <th>
+                    Action
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  booking of recentBookings;
+                  track booking.id
+                ) {
+
+                  <tr>
+
+                    <td>
+
+                      <span class="booking-id">
+                        #{{ booking.id }}
+                      </span>
+
+                    </td>
+
+
+                    <td>
+
+                      <strong>
+                        {{ getResourceName(booking.resourceId) }}
+                      </strong>
+
+                      <span class="table-secondary">
+                        {{ getResourceType(booking.resourceId) }}
+                      </span>
+
+                    </td>
+
+
+                    <td>
+                      {{ formatDate(booking.startTime) }}
+                    </td>
+
+
+                    <td>
+                      {{ formatTime(booking.startTime) }}
+                      –
+                      {{ formatTime(booking.endTime) }}
+                    </td>
+
+
+                    <td>
+
+                      <span
+                        class="status-badge"
+                        [class]="getStatusClass(booking.status)"
+                      >
+                        {{ getStatusLabel(booking.status) }}
+                      </span>
+
+                    </td>
+
+
+                    <td>
+
+                      @if (canChangeStatus(booking)) {
+
+                        <select
+                          class="status-select"
+                          [disabled]="updatingBookingId === booking.id"
+                          [value]="booking.status"
+                          (change)="changeStatus(
+                            booking,
+                            $any($event.target).value
+                          )"
+                        >
+
+                          <option
+                            [value]="booking.status"
+                          >
+                            Modifier...
+                          </option>
+
+                          @for (
+                            status of getAvailableStatuses(booking);
+                            track status
+                          ) {
+
+                            <option
+                              [value]="status"
+                            >
+                              {{ getStatusLabel(status) }}
+                            </option>
+
+                          }
+
+                        </select>
+
+                      }
+
+                      @else {
+
+                        <span class="terminal-status">
+                          Statut final
+                        </span>
+
+                      }
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </section>
+
+
+      <section class="dashboard-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-label">
+              RESSOURCES
+            </span>
+
+            <h2>
+              Ressources actives
+            </h2>
+
+          </div>
+
+          <span class="section-count">
+            {{ activeResourcesCount }} active(s)
+          </span>
+
+        </div>
+
+
+        <div class="resource-grid">
+
+          @for (
+            resource of resources;
+            track resource.id
+          ) {
+
+            @if (resource.isActive) {
+
+              <article class="resource-card">
+
+                <div class="resource-card-icon">
+                  S
+                </div>
+
+                <div class="resource-card-content">
+
+                  <h3>
+                    {{ resource.name }}
+                  </h3>
+
+                  <span>
+                    {{ getResourceType(resource.id) }}
+                    · capacité {{ resource.capacity }}
+                  </span>
+
+                  @if (resource.description) {
+
+                    <p>
+                      {{ resource.description }}
+                    </p>
+
+                  }
+
+                </div>
+
+                <span class="active-badge">
+                  Active
+                </span>
+
+              </article>
+
+            }
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <section class="reliability-section">
+
+        <div class="reliability-content">
+
+          <span class="section-label">
+            FIABILITÉ
+          </span>
+
+          <h2>
+            Des réservations conçues pour être fiables.
+          </h2>
+
+          <p>
+            SmartBooking protège les créneaux grâce au contrôle
+            de concurrence, à l'idempotence et aux transitions
+            de statut contrôlées par le backend.
+          </p>
+
+        </div>
+
+
+        <div class="reliability-items">
+
+          <div class="reliability-item">
+
+            <strong>
+              Concurrence
+            </strong>
+
+            <span>
+              Un même créneau ne peut pas être réservé deux fois.
+            </span>
+
+          </div>
+
+
+          <div class="reliability-item">
+
+            <strong>
+              Idempotence
+            </strong>
+
+            <span>
+              Une nouvelle tentative ne crée pas de doublon.
+            </span>
+
+          </div>
+
+
+          <div class="reliability-item">
+
+            <strong>
+              États contrôlés
+            </strong>
+
+            <span>
+              Les transitions invalides sont refusées par le backend.
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+  </main>
+
+
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <a
+          routerLink="/home"
+          class="logo"
+        >
+          <span class="logo-mark">S</span>
+          <span>SmartBooking</span>
+        </a>
+
+        <p>
+          Une plateforme de réservation simple, fiable et sécurisée.
+        </p>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Navigation
+        </h4>
+
+        <a routerLink="/home">
+          Accueil
+        </a>
+
+        <a routerLink="/resources">
+          Ressources
+        </a>
+
+        <a routerLink="/bookings">
+          Mes réservations
+        </a>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Administration
+        </h4>
+
+        <a routerLink="/admin">
+          Tableau de bord
+        </a>
+
+        <a routerLink="/resources">
+          Ressources
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+      © 2026 SmartBooking · Administration
+    </div>
+
+  </footer>
+
+</div>

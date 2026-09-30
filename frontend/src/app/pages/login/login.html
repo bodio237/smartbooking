@@ -1,0 +1,139 @@
+<div class="login-page">
+
+  <!-- HEADER -->
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <a routerLink="/home" class="logo">
+        <span class="logo-mark">S</span>
+        <span>SmartBooking</span>
+      </a>
+
+      <a routerLink="/home" class="back-link">
+        ← Retour à l'accueil
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- LOGIN -->
+  <main class="login-container">
+
+    <section class="login-card">
+
+      <div class="login-header">
+
+        <span class="section-label">
+          ESPACE CLIENT
+        </span>
+
+        <h1>
+          Bon retour
+        </h1>
+
+        <p>
+          Connectez-vous pour gérer vos réservations.
+        </p>
+
+      </div>
+
+
+      <!-- ERREUR -->
+      @if (errorMessage) {
+
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+
+      }
+
+
+      <!-- FORMULAIRE -->
+      <form (ngSubmit)="login()">
+
+        <div class="form-group">
+
+          <label for="email">
+            Adresse email
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="email"
+            placeholder="exemple@email.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="password">
+            Mot de passe
+          </label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            [(ngModel)]="password"
+            placeholder="Votre mot de passe"
+            autocomplete="current-password"
+            required
+          >
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="login-button"
+          [disabled]="loading"
+        >
+
+          @if (loading) {
+            Connexion...
+          }
+          @else {
+            Se connecter
+          }
+
+        </button>
+
+      </form>
+
+
+      <div class="register-link">
+
+        <span>
+          Vous n'avez pas encore de compte ?
+        </span>
+
+        <a routerLink="/register">
+          Créer un compte
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <p>
+      © 2026 SmartBooking · Plateforme de réservation fiable
+    </p>
+
+  </footer>
+
+</div>

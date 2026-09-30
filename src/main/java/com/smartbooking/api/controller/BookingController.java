@@ -72,6 +72,26 @@ public class BookingController {
     }
 
     /**
+     * Retourne les réservations d'une ressource.
+     *
+     * Utilisé notamment par le frontend pour afficher
+     * les créneaux déjà réservés.
+     */
+    @GetMapping("/resource/{resourceId}")
+    public ResponseEntity<List<BookingResponse>> getResourceBookings(
+        @PathVariable Long resourceId
+    ) {
+
+        List<BookingResponse> bookings = bookingService
+            .getResourceBookings(resourceId)
+            .stream()
+            .map(BookingResponse::from)
+            .toList();
+
+        return ResponseEntity.ok(bookings);
+    }
+
+    /**
      * Retourne une réservation appartenant à l'utilisateur connecté.
      */
     @GetMapping("/{bookingId}")

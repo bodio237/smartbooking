@@ -1,0 +1,513 @@
+<div class="resources-page">
+
+  <!-- HEADER -->
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <a routerLink="/home" class="logo">
+        <span class="logo-mark">S</span>
+        <span>SmartBooking</span>
+      </a>
+
+      <nav class="main-nav">
+        <a routerLink="/home">Accueil</a>
+        <a routerLink="/resources" class="active">Ressources</a>
+        <a routerLink="/bookings">Mes réservations</a>
+      </nav>
+
+      <div class="header-actions">
+        <a routerLink="/login" class="login-link">
+          Connexion
+        </a>
+
+        <a routerLink="/register" class="signup-button">
+          Créer un compte
+        </a>
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- INTRO -->
+  <section class="resources-intro">
+
+    <div class="intro-content">
+
+      <span class="eyebrow">
+        SMARTBOOKING
+      </span>
+
+      <h1>
+        Trouvez la ressource
+        <span>qui vous convient.</span>
+      </h1>
+
+      <p>
+        Explorez nos salles, équipements et praticiens disponibles
+        et trouvez facilement le créneau qui vous convient.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- SEARCH -->
+  <section class="search-section">
+
+    <div class="search-container">
+
+      <div class="search-box">
+
+        <span class="search-icon">⌕</span>
+
+        <input
+          type="text"
+          placeholder="Salle, équipement, praticien..."
+          [value]="searchTerm"
+          (input)="searchTerm = $any($event.target).value"
+          (keyup.enter)="search()"
+        >
+
+        <button
+          type="button"
+          class="search-button"
+          (click)="search()"
+        >
+          Rechercher
+        </button>
+
+      </div>
+
+
+      <!-- CATEGORIES -->
+      <div class="categories">
+
+        <button
+          type="button"
+          [class.active]="selectedCategory === 'ALL'"
+          (click)="selectCategory('ALL')"
+        >
+          ⌂ Toutes
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedCategory === 'ROOM'"
+          (click)="selectCategory('ROOM')"
+        >
+          ▣ Salles
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedCategory === 'EQUIPMENT'"
+          (click)="selectCategory('EQUIPMENT')"
+        >
+          ▤ Équipements
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedCategory === 'PRACTITIONER'"
+          (click)="selectCategory('PRACTITIONER')"
+        >
+          ♙ Praticiens
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- RESOURCES -->
+  <section class="resources-section">
+
+    <div class="section-header">
+
+      <div>
+
+        <span class="section-label">
+          EXPLORER
+        </span>
+
+        <h2>
+          Ressources disponibles
+        </h2>
+
+      </div>
+
+      @if (!loading && !error) {
+
+        <span class="resource-count">
+          {{ filteredResources.length }} ressource(s)
+        </span>
+
+      }
+
+    </div>
+
+
+    <!-- LOADING -->
+    @if (loading) {
+
+      <div class="state-message">
+
+        <div class="loader"></div>
+
+        <p>
+          Chargement des ressources...
+        </p>
+
+      </div>
+
+    }
+
+    <!-- ERROR -->
+    @else if (error) {
+
+      <div class="state-message error-state">
+
+        <div class="state-icon">
+          !
+        </div>
+
+        <h3>
+          Impossible de charger les ressources
+        </h3>
+
+        <p>
+          Vérifiez que le serveur SmartBooking est bien démarré.
+        </p>
+
+      </div>
+
+    }
+
+    <!-- EMPTY -->
+    @else if (filteredResources.length === 0) {
+
+      <div class="state-message empty-state">
+
+        <div class="state-icon">
+          ⌕
+        </div>
+
+        <h3>
+          Aucune ressource trouvée
+        </h3>
+
+        <p>
+          Essayez de modifier votre recherche ou de choisir une autre catégorie.
+        </p>
+
+        <button
+          type="button"
+          class="reset-button"
+          (click)="searchTerm = ''; selectCategory('ALL')"
+        >
+          Réinitialiser les filtres
+        </button>
+
+      </div>
+
+    }
+
+    <!-- RESOURCES GRID -->
+    @else {
+
+      <div class="resources-grid">
+
+        @for (resource of filteredResources; track resource.id) {
+
+          <article class="resource-card">
+
+            <!-- IMAGE / PLACEHOLDER -->
+            <div class="resource-image">
+
+              <div class="resource-placeholder">
+
+                @if (
+                  resource.type === 'ROOM' ||
+                  resource.type === 'SALLE' ||
+                  resource.type === 'CHAMBRE'
+                ) {
+
+                  <span>▣</span>
+
+                }
+
+                @else if (
+                  resource.type === 'EQUIPMENT' ||
+                  resource.type === 'EQUIPEMENT'
+                ) {
+
+                  <span>▤</span>
+
+                }
+
+                @else {
+
+                  <span>♙</span>
+
+                }
+
+              </div>
+
+              <span class="availability-badge">
+                Disponible
+              </span>
+
+            </div>
+
+
+            <!-- CONTENT -->
+            <div class="resource-content">
+
+              <div class="resource-type">
+
+                @if (
+                  resource.type === 'ROOM' ||
+                  resource.type === 'SALLE'
+                ) {
+
+                  Salle
+
+                }
+
+                @else if (resource.type === 'CHAMBRE') {
+
+                  Chambre
+
+                }
+
+                @else if (
+                  resource.type === 'EQUIPMENT' ||
+                  resource.type === 'EQUIPEMENT'
+                ) {
+
+                  Équipement
+
+                }
+
+                @else {
+
+                  {{ resource.type }}
+
+                }
+
+              </div>
+
+
+              <h3>
+                {{ resource.name }}
+              </h3>
+
+
+              @if (resource.description) {
+
+                <p class="description">
+                  {{ resource.description }}
+                </p>
+
+              }
+
+              @else {
+
+                <p class="description">
+                  Ressource disponible à la réservation.
+                </p>
+
+              }
+
+
+              <div class="resource-details">
+
+                <span>
+                  👥 {{ resource.capacity }}
+                  place{{ resource.capacity > 1 ? 's' : '' }}
+                </span>
+
+                <span>
+                  📍 Sur site
+                </span>
+
+              </div>
+
+
+              <div class="card-footer">
+
+                <span class="resource-status">
+                  ● Disponible
+                </span>
+
+                <a
+                  [routerLink]="['/resources', resource.id]"
+                  class="availability-link"
+                >
+                  Voir la disponibilité →
+                </a>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        }
+
+      </div>
+
+    }
+
+  </section>
+
+
+  <!-- TRUST -->
+  <section class="trust-section">
+
+    <div class="trust-item">
+
+      <div class="trust-icon">
+        ✓
+      </div>
+
+      <div>
+
+        <h3>
+          Réservation fiable
+        </h3>
+
+        <p>
+          Votre créneau est protégé une fois réservé.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="trust-item">
+
+      <div class="trust-icon">
+        ◉
+      </div>
+
+      <div>
+
+        <h3>
+          Sans double réservation
+        </h3>
+
+        <p>
+          Les conflits de créneaux sont automatiquement gérés.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="trust-item">
+
+      <div class="trust-icon">
+        ↻
+      </div>
+
+      <div>
+
+        <h3>
+          Simple et rapide
+        </h3>
+
+        <p>
+          Trouvez et réservez votre ressource facilement.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <a routerLink="/home" class="logo">
+
+          <span class="logo-mark">
+            S
+          </span>
+
+          <span>
+            SmartBooking
+          </span>
+
+        </a>
+
+        <p>
+          Une plateforme de réservation simple, fiable et sécurisée.
+        </p>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Navigation
+        </h4>
+
+        <a routerLink="/home">
+          Accueil
+        </a>
+
+        <a routerLink="/resources">
+          Ressources
+        </a>
+
+        <a routerLink="/bookings">
+          Mes réservations
+        </a>
+
+      </div>
+
+
+      <div class="footer-column">
+
+        <h4>
+          Compte
+        </h4>
+
+        <a routerLink="/login">
+          Connexion
+        </a>
+
+        <a routerLink="/register">
+          Créer un compte
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      © 2026 SmartBooking · Plateforme de réservation fiable
+
+    </div>
+
+  </footer>
+
+</div>
